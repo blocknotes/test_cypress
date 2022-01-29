@@ -1,0 +1,6 @@
+[submodule "server"]
+	path = server
+	url = https://github.com/blocknotes/test_rails7
+[submodule "client"]
+	path = client
+	url = https://github.com/blocknotes/test_alpinejs
