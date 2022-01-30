@@ -1,0 +1,48 @@
+name: Cypress tests
+on: [push]
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          working-directory: ./server
+
+      - name: Server setup
+        working-directory: ./server
+        run: bin/rails db:test:prepare
+
+      - name: Client setup
+        working-directory: ./client
+        run: yarn
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        env:
+          BROWSERSLIST_IGNORE_OLD_DATA: 1
+        with:
+          start: yarn start:server, yarn start:client
+          wait-on: 'http://localhost:3000, http://localhost:8000'
+
+      - name: On failure, store screenshots 
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+
+      # - name: On failure, store videos 
+      #   uses: actions/upload-artifact@v2
+      #   if: failure()
+      #   with:
+      #     name: cypress-videos
+      #     path: cypress/videos
