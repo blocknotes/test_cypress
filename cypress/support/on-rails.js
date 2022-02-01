@@ -14,7 +14,8 @@ Cypress.Commands.add('appCommands', function (body) {
   }).then((response) => {
     log.end();
     if (response.status !== 201) {
-      expect(response.body.message).to.be.empty
+      // expect(response.body.message).to.be.empty
+      expect(response.body.message).to.be.undefined
       expect(response.status).to.be.equal(201)
     }
     return response.body
@@ -33,6 +34,18 @@ Cypress.Commands.add('appScenario', function (name, options = {}) {
 
 Cypress.Commands.add('appEval', function (code) {
   return cy.app('eval', code)
+});
+
+Cypress.Commands.add('appCountRecords', function (model, where = {}) {
+  return cy.app('count_records', { model, where })
+});
+
+Cypress.Commands.add('appCreateRecord', function (model, where = {}) {
+  return cy.app('create_record', { model, attrs: where })
+});
+
+Cypress.Commands.add('appUpdateRecord', function (model, where = {}, new_attrs = {}) {
+  return cy.app('update_record', { model, attrs: where, new_attrs })
 });
 
 Cypress.Commands.add('appFactories', function (options) {

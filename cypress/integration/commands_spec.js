@@ -5,11 +5,16 @@ describe('Executing commands', () => {
 
   it('fetch the messages', () => {
     cy.task('log', '  > Execute some server side commands')
-    cy.appCommands([
-      { name: 'eval', options: "Message.create(author: 'Me', content: 'First message')" },
-      { name: 'eval', options: "Message.create(author: 'Me', content: 'Second message')" },
-      { name: 'eval', options: "Message.create(author: 'Me', content: 'Third message')" },
-    ])
+
+    // Just a test: try to create a record without the required attributes
+    cy.appCreateRecord('Message').then((result) => {
+      const errors = { author: [ "can't be blank" ], content: [ "can't be blank" ] }
+      expect(result).to.deep.eq(errors)
+    })
+
+    cy.appCreateRecord('Message', { author: 'Me', content: 'First message' })
+    cy.appCreateRecord('Message', { author: 'Me', content: 'Second message' })
+    cy.appCreateRecord('Message', { author: 'Me', content: 'Third message' })
 
     cy.visit('/')
 
@@ -25,9 +30,13 @@ describe('Executing commands', () => {
     cy.visit('/')
 
     // Server side check
-    cy.appEval('Message.count').then((result) => {
+    cy.appCountRecords('Message').then((result) => {
       expect(result).to.eq(0)
     })
+
+    // cy.appEval('Message.count').then((result) => {
+    //   expect(result).to.eq(0)
+    // })
 
     // Client side checks
     cy.get('#formData_author').type('Some author')
@@ -40,8 +49,32 @@ describe('Executing commands', () => {
     })
 
     // Server side check
-    cy.appEval('Message.where(content: "Some content").count').then((result) => {
+    cy.appCountRecords('Message', { content: 'Some content' }).then((result) => {
       expect(result).to.eq(1)
+    })
+
+    // cy.appEval('Message.where(content: "Some content").count').then((result) => {
+    //   expect(result).to.eq(1)
+    // })
+  })
+
+  it('refreshes the messages list', () => {
+    cy.appCreateRecord('Message', { author: 'Me', content: 'First message' })
+
+    cy.visit('/')
+
+    cy.get('.messages li').should(($messages) => {
+      expect($messages).to.have.length(1)
+      expect($messages[0]).to.contain('First message')
+    })
+
+    cy.appUpdateRecord('Message', { content: 'First message' }, { content: "Updated message" })
+
+    cy.contains('Refresh messages').click()
+
+    cy.get('.messages li').should(($messages) => {
+      expect($messages).to.have.length(1)
+      expect($messages[0]).to.contain('Updated message')
     })
   })
 })

@@ -1,45 +1,32 @@
 # Test Cypress
 
 Features:
-- test server app (using Ruby on Rails 7);
-- test client app (using Alpine.js);
-- GitHub action to run Cypress - [cypress.yml](.github/workflows/cypress.yml);
+- [test server app](https://github.com/blocknotes/test_rails7) using Ruby on Rails 7;
+- [test client app](https://github.com/blocknotes/test_alpinejs) using Alpine.js;
+- GitHub action for Cypress tests (using Docker for client/server apps) - [cypress.yml](.github/workflows/cypress.yml);
 - [cypress-on-rails](https://github.com/shakacode/cypress-on-rails) as bridge between client and server.
 
 On Cypress:
 - [example](cypress/integration/factory_bot_spec.js) using FactoryBot factories;
 - [example](cypress/integration/fixtures_spec.js) using Rails fixtures;
 - [example](cypress/integration/scenarios_spec.js) using a scenario;
-- [example](cypress/integration/commands_spec.js) executing Ruby code for server side checks.
+- [example](cypress/integration/commands_spec.js) running some server side checks.
 
-## Setup
+Alternatives:
+- using git submodules and [without Docker](https://github.com/blocknotes/test_cypress/releases/tag/no_docker)
 
-```sh
-# Server setup
-cd server
-bin/setup # for development
-bin/rails db:test:prepare # for tests
-# Client setup
-cd client
-yarn
-```
-
-## Run
+## Usage
 
 ```sh
 # Run the tests (it launches the server and the client first):
 yarn test
 
-# Or launch the server + client manually (foreman required):
-foreman start
-# And in another shell, open Cypress:
+# Otherwise, launch server and client manually and open Cypress UI:
 yarn cy:open
-```
 
-## Installation
+# Or run Cypress tests:
+yarn cy:run
 
-```sh
-# Git modules setup
-git submodule add https://github.com/blocknotes/test_rails7 server
-git submodule add https://github.com/blocknotes/test_alpinejs client
+# Execute a single spec:
+BROWSERSLIST_IGNORE_OLD_DATA=1 yarn run cypress run -s cypress/integration/commands_spec.js
 ```

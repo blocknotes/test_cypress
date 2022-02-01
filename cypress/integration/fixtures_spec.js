@@ -4,7 +4,8 @@ describe('Using fixtures', function() {
   })
 
   it('loading all fixtures', function() {
-    cy.appFixtures({ fixtures_dir: '../server/spec/fixtures' })
+    cy.appFixtures()
+    // cy.appFixtures({ fixtures_dir: '../server/spec/fixtures' })
     // cy.appFixtures({fixtures: ['posts']}) // load only some fixtures
 
     cy.visit('/')

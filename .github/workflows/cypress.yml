@@ -1,37 +1,45 @@
 name: Cypress tests
-on: [push]
+on:
+  push:
+  repository_dispatch:
+    types: [on-client-build, on-server-build]
 
 jobs:
   cypress-run:
     runs-on: ubuntu-20.04
     timeout-minutes: 5
+
+    services:
+      test-server:
+        image: blocknotes/test_rails7
+        # env:
+        #   VERBOSE_LOGS: 1
+        options: >-
+          --health-cmd "nc -z localhost 3000"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 3000:3000
+
+      test-client:
+        image: blocknotes/test_alpinejs
+        options: >-
+          --health-cmd "nc -z localhost 8000"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 8000:8000
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          submodules: true
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-          working-directory: ./server
-
-      - name: Server setup
-        working-directory: ./server
-        run: bin/rails db:test:prepare
-
-      - name: Client setup
-        working-directory: ./client
-        run: yarn
 
       - name: Cypress run
         uses: cypress-io/github-action@v2
         env:
           BROWSERSLIST_IGNORE_OLD_DATA: 1
-        with:
-          start: yarn start:server, yarn start:client
-          wait-on: 'http://localhost:3000, http://localhost:8000'
 
       - name: On failure, store screenshots 
         uses: actions/upload-artifact@v2
