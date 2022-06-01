@@ -14,8 +14,7 @@ Cypress.Commands.add('appCommands', function (body) {
   }).then((response) => {
     log.end();
     if (response.status !== 201) {
-      // expect(response.body.message).to.be.empty
-      expect(response.body.message).to.be.undefined
+      expect(response.body.message).not.to.exist
       expect(response.status).to.be.equal(201)
     }
     return response.body

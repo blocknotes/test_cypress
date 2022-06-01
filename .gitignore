@@ -3,5 +3,8 @@
 _misc/
 node_modules/
 
+client/
+server/
+
 cypress/screenshots/
 cypress/videos/

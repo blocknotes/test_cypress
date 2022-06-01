@@ -11,7 +11,7 @@
     "start:client": "yarn --cwd client start",
     "start:server": "cd server && bin/rails s -e test -p 3000",
     "cy:open": "cypress open",
-    "cy:run": "BROWSERSLIST_IGNORE_OLD_DATA=1 cypress run",
+    "cy:run": "ELECTRON_ENABLE_LOGGING=1 BROWSERSLIST_IGNORE_OLD_DATA=1 cypress run",
     "setup:client": "yarn --cwd client",
     "setup:server": "cd server && bin/rails db:test:prepare",
     "test": "start-server-and-test 'yarn start:server' http://localhost:3000 'yarn start:client' http://localhost:8000 'yarn cy:run'"
